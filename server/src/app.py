@@ -6,9 +6,11 @@ import json
 import base64
 import os
 import time
+from flask_cors import CORS
 
 app = Flask(__name__)
 api = Api(app)
+CORS(app)
 
 class OSNR(Resource):
     def get(self):   
@@ -41,7 +43,10 @@ class OSNR(Resource):
             # 'locations': [[]]
             #==================== Use Json request body =================================
             data = request.get_json()
-            osnr_data = base64.b64decode(data["base64"])
+            if data["data"] != "":
+                osnr_data = data["data"]
+            else:
+                osnr_data = base64.b64decode(data["base64"])
             init()
             osnr_updated = upload_osnr_file(osnr_data)
             parsed_data = osnr_parse_file(str(osnr_data))

@@ -7,6 +7,7 @@
 import json
 import os
 import urllib3
+import firebase_admin
 from firebase_admin import credentials, initialize_app, storage
 
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) + '\\'
@@ -18,8 +19,9 @@ def init():
     # # Init firebase with your credentials
     # filter_line = ''.join(ch for ch in str(r.data).replace("b'", "") if ch not in exclude)  
     # print(filter_line)
-    cred = credentials.Certificate(os.path.join(__location__, 'cred.json'))
-    initialize_app(cred, {'storageBucket': 'mininet-optical-file-system.appspot.com'})
+    if not firebase_admin._apps:
+        cred = credentials.Certificate(os.path.join(__location__, 'cred.json'))
+        initialize_app(cred, {'storageBucket': 'mininet-optical-file-system.appspot.com'})
 
 def upload_nodes_file():
     fileName = "nodes.txt"
