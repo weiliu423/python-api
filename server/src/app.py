@@ -1,4 +1,4 @@
-from file_manager import osnr_parse_file
+from file_manager import osnr_parse_file, monitor_data_parse, sigtrace_data_parse
 from upload_files import upload_osnr_file, upload_osnr_data_file, init
 from flask import Flask, request, render_template, make_response
 from flask_restful import Resource, Api, reqparse
@@ -24,7 +24,7 @@ class OSNR(Resource):
             return {'data': 'An exception occurred'}, 500 
 
     def post(self):
-        # try:
+        try:
             
             #=============== Use Uri Parameter as input ===================
             #parser = reqparse.RequestParser()  # initialize
@@ -53,6 +53,58 @@ class OSNR(Resource):
             osnr_data_updated = upload_osnr_data_file(parsed_data)
             #============================================================================
             return {'success': True, 'osnr': osnr_updated, 'osnr_parsed_data': osnr_data_updated, 'data' : parsed_data }, 200  # return data with 200 OK
+        except:
+            return {'data': 'An exception occurred'}, 500 
+    pass
+
+class monitor(Resource):
+    def get(self):   
+        try:
+            data = monitor_data_parse("")
+            if(data != '[]'):       
+                return {'data': json.loads(data)}, 200  # return data and 200 OK code
+            else:
+                return {'data': 'No data found'}, 404
+        except:
+            return {'data': 'An exception occurred'}, 500 
+
+    def post(self):
+        # try:            
+            data = request.get_json()
+            if data["data"] != "":
+                monitor_data = data["data"]
+            else:
+                monitor_data = base64.b64decode(data["base64"])
+            init()
+
+            #============================================================================
+            return {'success': True, 'monitor_data': True, 'data' : "" }, 200  # return data with 200 OK
+        # except:
+        #     return {'data': 'An exception occurred'}, 500 
+    pass
+
+class sigtrace(Resource):
+    def get(self):   
+        try:
+            data = sigtrace_data_parse("")
+            if(data != '[]'):       
+                return {'data': json.loads(data)}, 200  # return data and 200 OK code
+            else:
+                return {'data': 'No data found'}, 404
+        except:
+            return {'data': 'An exception occurred'}, 500 
+
+    def post(self):
+        # try:            
+            data = request.get_json()
+            if data["data"] != "":
+                monitor_data = data["data"]
+            else:
+                monitor_data = base64.b64decode(data["base64"])
+            init()
+
+            #============================================================================
+            return {'success': True, 'monitor_data': True, 'data' : "" }, 200  # return data with 200 OK
         # except:
         #     return {'data': 'An exception occurred'}, 500 
     pass
@@ -66,9 +118,9 @@ def index():
     context = { 'server_time': format_server_time() }
     return render_template('index.html', context=context)
 
-api.add_resource(OSNR, '/osnr')  # '/users' is our entry point for Users
-#api.add_resource(Locations, '/locations')  # and '/locations' is our entry point for Locations
-
+api.add_resource(OSNR, '/osnr')  # '/osnr' is the entry point for osnr
+api.add_resource(monitor, '/monitors')  # and '/monitors' is the entry point for monitors
+api.add_resource(sigtrace, '/sigtrace')  # and '/sigtrace' is the entry point for sigtrace
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0',port=int(os.environ.get('PORT', 5000)))
