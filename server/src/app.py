@@ -85,14 +85,14 @@ class monitor(Resource):
 
 class sigtrace(Resource):
     def get(self):   
-        try:
+        #try:
             data = sigtrace_data_parse("")
             if(data != '[]'):       
                 return {'data': json.loads(data)}, 200  # return data and 200 OK code
             else:
                 return {'data': 'No data found'}, 404
-        except:
-            return {'data': 'An exception occurred'}, 500 
+        # except:
+        #     return {'data': 'An exception occurred'}, 500 
 
     def post(self):
         # try:            

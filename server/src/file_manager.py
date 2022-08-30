@@ -125,10 +125,9 @@ def sigtrace_data_parse(data):
                 input_data = []
                 output_data = []
 
-    row_data = []
+    row_data = [sigtrace_header]
     parse_data = []
     output_data = []
-    new_channel = False
     for sig in sig_data:
         #print('sig', sig)
         for data in sig:
@@ -169,38 +168,11 @@ def sigtrace_data_parse(data):
                                 if len(parse_data) > 5:
                                     row_data.append(parse_data)
                                     parse_data = parse_data[:-4]
+    df = pd.DataFrame(row_data)
+    df = df[1:]
+    df.columns = sigtrace_header
+    #print(df)
+    return df.to_json(orient='records')
 
-    #print(row_data)
-    for i in row_data:
-        print(i)
-        print('\n')
-    #print(pd.DataFrame(row_data, meta=sigtrace_header))
 
-
-    #db_value = 10 * np.log10(absolute_value)
-
-    # for line in each_line:
-    #     print(line)
-    #     device = line.split('>:')
-    #     print('device', device)
-    #     merge_device = ""
-    #     for trace in device:
-    #         device_trace = trace.split('},')
-    #         print('trace', device_trace)
-    #         if len(device_trace) > 1:
-    #             for iDevice in device_trace[0]:
-    #                 merge_device = merge_device + iDevice
-    #             merge_device += '}'
-    #             print('merged', merge_device)
-    #         elif len(device_trace) == 1:
-    #             if '}' not in device_trace[0]:
-    #                 merge_device = device_trace[0] + ':'
-    #             print('merged 0', merge_device)
-    #     print('\n')
-
-    #filter_line = ''.join(ch for ch in each_line if ch not in exclude)  
-    #each_lines = each_line.split('')
-    #print(each_line)
-    # return json.dumps(each_line)
-
-print(sigtrace_data_parse(""))
+#print(sigtrace_data_parse(""))
