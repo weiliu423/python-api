@@ -10,6 +10,9 @@ import json
 import os
 import re
 import urllib3
+import json
+import pandas as pd
+import numpy as np
 
 filePath = 'C:\\Users\\Wei\\OneDrive\\UCC\\Project\\'
 
@@ -90,37 +93,114 @@ def sigtrace_data_parse(data):
         http = urllib3.PoolManager()
         r = http.request('GET', 'https://firebasestorage.googleapis.com/v0/b/mininet-optical-file-system.appspot.com/o/signal_trace.txt?alt=media&token=b24f5464-c09b-4c99-89e9-d22ac32fa790')
         each_line = str(r.data).replace('b"', "").replace(' ', '')
-        each_line = each_line[1:-2]
     else:
         each_line = str(data).replace("b'", "")
-    
-    each_line = each_line.split(',<')
-    sig_data = []
 
-    for line in each_line:
-        print(line)
-        device = line.split('>:')
-        print('device', device)
-        merge_device = ""
-        for trace in device:
-            device_trace = trace.split('},')
-            print('trace', device_trace)
-            if len(device_trace) > 1:
-                for iDevice in device_trace[0]:
-                    merge_device = merge_device + iDevice
-                merge_device += '}'
-                print('merged', merge_device)
-            elif len(device_trace) == 1:
-                if '}' not in device_trace[0]:
-                    merge_device = device_trace[0] + ':'
-                print('merged 0', merge_device)
+    sigtrace_header = ['Channel', 'direction','link','power','ase_noise','nli_noise']
+    sig_data = []
+    data = each_line.split('\\r\\n')
+    device_data = []
+    input_data = []
+    output_data = []
+    for each_data in data:
+        if 'signal' in each_data:
+            device_data.append(each_data.split('signal:')[1])
+        if 'input' in each_data.lower():
+            input_data.append(each_data)
+        if 'output' in each_data.lower():
+            output_data.append(each_data) 
+        
+        input_len = len(input_data)
+        output_len = len(output_data)
+        #print('device', device_data, 'input', input_len, 'output', output_len)
+        if len(device_data) > 0 & (input_len > 0 or output_len > 0):
+            if output_len > 0:    
+                sig_data.append([device_data,output_data])
+                device_data = []
+                input_data = []
+                output_data = []
+            if input_len > 0:
+                sig_data.append([device_data,input_data])
+                device_data = []
+                input_data = []
+                output_data = []
+
+    row_data = []
+    parse_data = []
+    output_data = []
+    new_channel = False
+    for sig in sig_data:
+        #print('sig', sig)
+        for data in sig:
+            if '<ch' in str(data):
+                if len(parse_data) > 0:
+                    print(parse_data[0] , str(data))
+                    if parse_data[0] == str(data):
+                        parse_data = parse_data[:-5]
+                    else:
+                        parse_data = []
+                parse_data.append(str(data)[2:-2].replace('<', '').replace('>', ''))
+            else:
+                direction_field = ""
+                if 'input' in str(data).lower():
+                    direction_field = "Input"
+                    parse_data.append(direction_field)
+                if 'output' in str(data).lower():
+                    direction_field = "Output"
+                    parse_data.append(direction_field)
+
+                direction_data = str(data).lower().replace(direction_field.lower() + ':', '')
+                each_signal = direction_data[3:-4].split('},')
+                for signal in each_signal:
+                    each_power = signal.split(':{')
+                    for info in each_power:
+                        if ('(' in info or '<' in info or (('r' in info or 't' in info) and len(info) == 2)):
+                            parse_data.append(info)
+                        else:
+                            noise = info.split(',')
+                            index = 0
+                            for each_noise in noise:
+                                index += 1
+                                if 'power' in each_noise:
+                                    dbm_value = 10 * np.log10(float(each_noise.split(":",1)[1])/1e-3)
+                                    parse_data.append(dbm_value)
+                                else:
+                                    parse_data.append(each_noise.split(":",1)[1])
+                                if len(parse_data) > 5:
+                                    row_data.append(parse_data)
+                                    parse_data = parse_data[:-4]
+
+    #print(row_data)
+    for i in row_data:
+        print(i)
         print('\n')
+    #print(pd.DataFrame(row_data, meta=sigtrace_header))
+
+
+    #db_value = 10 * np.log10(absolute_value)
+
+    # for line in each_line:
+    #     print(line)
+    #     device = line.split('>:')
+    #     print('device', device)
+    #     merge_device = ""
+    #     for trace in device:
+    #         device_trace = trace.split('},')
+    #         print('trace', device_trace)
+    #         if len(device_trace) > 1:
+    #             for iDevice in device_trace[0]:
+    #                 merge_device = merge_device + iDevice
+    #             merge_device += '}'
+    #             print('merged', merge_device)
+    #         elif len(device_trace) == 1:
+    #             if '}' not in device_trace[0]:
+    #                 merge_device = device_trace[0] + ':'
+    #             print('merged 0', merge_device)
+    #     print('\n')
 
     #filter_line = ''.join(ch for ch in each_line if ch not in exclude)  
     #each_lines = each_line.split('')
     #print(each_line)
     # return json.dumps(each_line)
-
-    
 
 print(sigtrace_data_parse(""))
