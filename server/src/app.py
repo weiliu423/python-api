@@ -26,23 +26,6 @@ class OSNR(Resource):
 
     def post(self):
         try:
-            
-            #=============== Use Uri Parameter as input ===================
-            #parser = reqparse.RequestParser()  # initialize
-            
-            # parser.add_argument('userId', required=True)  # add args
-            # parser.add_argument('name', required=True)
-            # parser.add_argument('city', required=True)
-            
-            #args = parser.parse_args()  # parse arguments to dictionary
-            
-            # create new dataframe containing new values
-            
-            # 'userId': args['userId'],
-            # 'name': args['name'],
-            # 'city': args['city'],
-            # 'locations': [[]]
-            #==================== Use Json request body =================================
             data = request.get_json()
             if data["data"] != "":
                 osnr_data = data["data"]
@@ -70,7 +53,7 @@ class monitor(Resource):
             return {'data': 'An exception occurred'}, 500 
 
     def post(self):
-        # try:            
+        try:            
             data = request.get_json()
             if data["data"] != "":
                 monitor_data = data["data"]
@@ -80,35 +63,20 @@ class monitor(Resource):
 
             #============================================================================
             return {'success': True, 'monitor_data': True, 'data' : "" }, 200  # return data with 200 OK
-        # except:
-        #     return {'data': 'An exception occurred'}, 500 
+        except:
+            return {'data': 'An exception occurred'}, 500 
     pass
 
 class sigtrace(Resource):
     def get(self):   
-        #try:
+        try:
             data = sigtrace_data_parse("")
             if(data != '[]'):       
                 return {'data': json.loads(data)}, 200  # return data and 200 OK code
             else:
                 return {'data': 'No data found'}, 404
-        # except:
-        #     return {'data': 'An exception occurred'}, 500 
-
-    def post(self):
-        # try:            
-            data = request.get_json()
-            if data["data"] != "":
-                monitor_data = data["data"]
-            else:
-                monitor_data = base64.b64decode(data["base64"])
-            init()
-
-            #============================================================================
-            return {'success': True, 'monitor_data': True, 'data' : "" }, 200  # return data with 200 OK
-        # except:
-        #     return {'data': 'An exception occurred'}, 500 
-    pass
+        except:
+            return {'data': 'An exception occurred'}, 500 
 
 class knn(Resource):
     def get(self):   
@@ -116,25 +84,12 @@ class knn(Resource):
             data = sigtrace_data_parse("")
             knn_result = KNN(data)
             if(data != '[]'):       
-                return {'data':"test"}, 200  # return data and 200 OK code
+                return {'data':knn_result}, 200  # return data and 200 OK code
             else:
                 return {'data': 'No data found'}, 404
         # except:
         #     return {'data': 'An exception occurred'}, 500 
 
-    def post(self):
-        # try:            
-            data = request.get_json()
-            if data["data"] != "":
-                monitor_data = data["data"]
-            else:
-                monitor_data = base64.b64decode(data["base64"])
-            init()
-
-            #============================================================================
-            return {'success': True, 'monitor_data': True, 'data' : "" }, 200  # return data with 200 OK
-        # except:
-        #     return {'data': 'An exception occurred'}, 500 
     pass
 
 def format_server_time():

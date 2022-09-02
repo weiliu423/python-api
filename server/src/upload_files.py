@@ -13,12 +13,6 @@ from firebase_admin import credentials, initialize_app, storage
 __location__ = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) + '\\'
 
 def init():
-    # exclude = '\\r\\n'
-    # http = urllib3.PoolManager()
-    # r = http.request('GET', 'https://firebasestorage.googleapis.com/v0/b/mininet-optical-file-system.appspot.com/o/cred.json?alt=media&token=f97ebb5f-f8e2-44f3-ba34-0792a8f5986d')
-    # # Init firebase with your credentials
-    # filter_line = ''.join(ch for ch in str(r.data).replace("b'", "") if ch not in exclude)  
-    # print(filter_line)
     if not firebase_admin._apps:
         cred = credentials.Certificate(os.path.join(__location__, 'cred.json'))
         initialize_app(cred, {'storageBucket': 'mininet-optical-file-system.appspot.com'})

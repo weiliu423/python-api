@@ -24,10 +24,6 @@ def osnr_parse_file(data):
         http = urllib3.PoolManager()
         r = http.request('GET', 'https://firebasestorage.googleapis.com/v0/b/mininet-optical-file-system.appspot.com/o/OSNR.txt?alt=media&token=01bb2232-e8da-4291-b43a-4c7df4b9a2c4')
         each_line = str(r.data).replace("b'", "")
-        # f = open(filePath + "OSNR_data.txt", "r")
-        # # data_bytes = f.read().encode("utf-8")
-        # # x = base64.b64encode(data_bytes)
-        # each_line = f.read().split('<')
     else:
         each_line = str(data).replace("b'", "")
     
@@ -65,13 +61,6 @@ def osnr_parse_file(data):
     return device_info
 
 def monitor_data_parse(data):
-    # if not data:
-    #     http = urllib3.PoolManager()
-    #     r = http.request('GET', 'https://firebasestorage.googleapis.com/v0/b/mininet-optical-file-system.appspot.com/o/monitor_data.txt?alt=media&token=4ba6ebb1-dac9-4281-95d9-719be0e14804')
-    #     each_line = str(r.data).replace("b'", "")
-    # else:
-    #     each_line = str(data).replace("b'", "")
-    
     data = {
         't1_monitor' : '{"osnr": {"2": {"freq": 191400000000000.0, "osnr": 19.833875729158677, "gosnr": 19.536026801031607, "power": 5.448370706925527e-05, "ase": 5.660816490507191e-07, "nli": 4.0185406218953076e-08}, "4": {"freq": 191500000000000.0, "osnr": 23.49962598505213, "gosnr": 22.837040867182452, "power": 5.480486783898081e-05, "ase": 2.4482543582585587e-07, "nli": 4.035192667872748e-08}, "5": {"freq": 191550000000000.0, "osnr": 21.91041028617704, "gosnr": 21.440123833542444, "power": 5.4697476501408726e-05, "ase": 3.523110475739888e-07, "nli": 4.029312145496667e-08}}}',
         't4_monitor' : '{"osnr": {"1": {"freq": 191350000000000.0, "osnr": 23.503032876710353, "gosnr": 22.839964548947957, "power": 5.4804952823973305e-05, "ase": 2.446338333062684e-07, "nli": 4.035205358409929e-08}, "3": {"freq": 191450000000000.0, "osnr": 21.91268308410258, "gosnr": 21.442177591726622, "power": 5.469759030796161e-05, "ase": 3.5212745314952116e-07, "nli": 4.029191559349638e-08}}}',
@@ -82,10 +71,6 @@ def monitor_data_parse(data):
         'r5_monitor' : '{"osnr": {"2": {"freq": 191400000000000.0, "osnr": 24.032061139891034, "gosnr": 23.289743446875843, "power": 1.985951359219094e-05, "ase": 7.848063229592461e-08, "nli": 1.462892520192838e-08}, "5": {"freq": 191550000000000.0, "osnr": 46.36497649580224, "gosnr": 31.199190361535116, "power": 1.9937496192377533e-05, "ase": 4.6043991797684606e-10, "nli": 1.466651739329251e-08}}}',
         'r6_monitor' : '{"osnr": {"2": {"freq": 191400000000000.0, "osnr": 22.275368378068798, "gosnr": 21.765946989103387, "power": 1.9820638645597903e-05, "ase": 1.1737640560780164e-07, "nli": 1.460809848309516e-08}, "4": {"freq": 191500000000000.0, "osnr": 46.36611027594679, "gosnr": 31.199224867587017, "power": 1.993749631247434e-05, "ase": 4.603197328305829e-10, "nli": 1.4666517481638705e-08}, "5": {"freq": 191550000000000.0, "osnr": 27.017880356774793, "gosnr": 25.649386966174017, "power": 1.9898437998488385e-05, "ase": 3.953947973493686e-08, "nli": 1.4645671465473894e-08}}}'    
     }
-
-    #filter_line = ''.join(ch for ch in each_line if ch not in exclude)  
-    #each_lines = each_line.split('')
-    #print(each_line)
     return json.dumps(data)
 
 def sigtrace_data_parse(data):
